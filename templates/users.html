@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html><head><title>Users</title></head>
+<body>
+<h1>Registered Users</h1>
+<table border="1">
+<tr><th>Name</th><th>Password</th><th>Current Key</th><th>Selected File</th><th>Operations Count</th></tr>
+{% for user in users.items() %}
+<tr><td>{{ user[0] }}</td><td>{{ user[1].password }}</td><td>{{ user[1].current_key }}</td><td>{{ user[1].selected_file }}</td><td>{{ user[1].operations | length }}</td></tr>
+{% endfor %}
+</table>
+</body></html>
