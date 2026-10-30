@@ -9,3 +9,7 @@ dependencies = ["fastapi", "uvicorn[standard]", "jinja2", "python-multipart", "i
 
 [project.scripts]
 dataweb = "dataweb_cli:main"
+
+[tool.setuptools]
+packages = []
+py-modules = ["dataweb_cli", "main", "init_project"]
