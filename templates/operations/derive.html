@@ -1,0 +1,30 @@
+<div class="derived-box" style="padding:16px;background:#16182a;border-radius:12px;border:1px solid #272b45;margin-top:10px;">
+<h3 style="font-size:16px;margin-bottom:12px;color:#e8e8f0;">Derive Column</h3>
+<form method="POST" action="/derive_column" style="display:flex;flex-direction:column;gap:10px;">
+  <label style="font-size:11px;color:#9ca3af;text-transform:uppercase;font-weight:600;">Old column (optional)</label>
+  <select name="old_col" style="padding:8px;border-radius:8px;background:#0f1220;border:1px solid #272b45;color:#e8e8f0;">
+    <option value="">— empty / blank —</option>
+    <option>id</option><option>price</option><option>name</option><option>value</option>
+  </select>
+  <label style="font-size:11px;color:#9ca3af;text-transform:uppercase;font-weight:600;">New column name</label>
+  <input name="new_col" placeholder="e.g. price_plus_10pct" style="padding:8px;border-radius:8px;background:#0f1220;border:1px solid #272b45;color:#e8e8f0;" required />
+  <div style="display:flex;gap:10px;">
+    <div style="flex:1;">
+      <label style="font-size:11px;color:#9ca3af;text-transform:uppercase;font-weight:600;">Operation</label>
+      <select name="op" style="padding:8px;border-radius:8px;background:#0f1220;border:1px solid #272b45;color:#e8e8f0;width:100%;">
+        <option value="pct_up">+10%</option>
+        <option value="pct_down">-10%</option>
+        <option value="add_50">+50 points</option>
+        <option value="sub_50">-50 points</option>
+        <option value="prefix_E">Prefix "E"</option>
+      </select>
+    </div>
+    <div style="flex:1;">
+      <label style="font-size:11px;color:#9ca3af;text-transform:uppercase;font-weight:600;">Modifier</label>
+      <input name="val" placeholder="optional" style="padding:8px;border-radius:8px;background:#0f1220;border:1px solid #272b45;color:#e8e8f0;width:100%;" />
+    </div>
+  </div>
+  <button type="submit" style="padding:10px;border:none;border-radius:8px;background:#7ee787;color:#0b0c15;font-weight:700;cursor:pointer;">Create</button>
+</form>
+{% if result %}<div style="margin-top:10px;padding:10px;background:#0f1220;border:1px solid #7ee787;border-radius:8px;color:#e8e8f0;font-size:13px;">{{ result }}</div>{% endif %}
+</div>

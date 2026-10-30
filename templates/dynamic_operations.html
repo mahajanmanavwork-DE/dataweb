@@ -1,0 +1,9 @@
+{% extends "operations.html" %}
+
+{% block operations_tab %}
+    {% for i in times %}
+
+    {% include "operations/filter.html" %}
+
+    {% endfor %}
+{% endblock operations_tab %}

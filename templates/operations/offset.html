@@ -1,0 +1,27 @@
+<form onsubmit="return false;">
+    <div class="operation-form">
+        <div class="operation-form-title">Offset</div>
+
+        <div class="form-grid">
+            <div class="form-field form-field-wide">
+                <label for="offset-n">Skip first N rows</label>
+                <input type="number" name="n" id="offset-n" class="form-input"
+                       min="0" max="{{ row_count }}" placeholder="e.g. 5" required>
+                <span class="form-hint">Current file has {{ row_count }} rows.</span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-apply" type="button"
+                    hx-post="/offset-operation"
+                    hx-include="closest form"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Apply</button>
+
+            <button class="btn-cancel" type="button"
+                    hx-get="/close-slot"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Cancel</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,43 @@
+/* =========================================================
+   FILE OPERATIONS BAR
+   ========================================================= */
+.file-operation-div { margin-top: 35px; display: block; height: auto; border-radius: 12px; border: 1px solid #e9ecef; box-shadow: 0 1px 3px rgba(0,0,0,0.04); background: #ffffff; width: 1010px; max-width: 1300px; margin-bottom: 35px; padding: 10px 15px 15px 15px; box-sizing: border-box; }
+.file-operations { margin-left: 5px; margin-bottom: 8px; margin-top: 5px; font-size: 16px; font-weight: 600; color: #374151; }
+.operations-box { display: flex; flex-wrap: wrap; gap: 8px; border: none; height: auto; width: 100%; margin: 0; padding: 0; }
+.operations-buttons { background-color: #0076ed; height: 34px; min-width: 100px; padding: 0 14px; border: none; border-radius: 6px; font-size: 13.5px; color: #f6f6f6; cursor: pointer; transition: background-color 0.2s; margin-bottom: 8px; }
+.operations-buttons:hover { background-color: #0064c8; }
+
+/* =========================================================
+   COLUMN BOXES
+   ========================================================= */
+.column-box { width: 240px; padding: 12px; border: 1px solid #ddd; border-radius: 7px; background: #fff; cursor: grab; user-select: none; }
+.column-box.dragging { opacity: 0.4; }
+.column-header { position: relative; min-height: 30px; }
+.column-name { display: block; padding-right: 45px; font-size: 14px; font-weight: 400; word-break: break-word; }
+.column-dtype { position: absolute; top: 0; right: 0; font-size: 10px; color: #666; background: #f2f2f2; padding: 2px 4px; border-radius: 3px; }
+.column-actions { display: flex; gap: 4px; margin-top: 10px; }
+.column-actions button { flex: 1; padding: 5px 2px; border-radius: 4px; cursor: pointer; }
+.rename-details { position: relative; display: inline-block; }
+.rename-details summary { box-sizing: border-box; width: 100px; height: 38px; padding: 7px 10px; border: 1px solid #b6d4fe; border-radius: 5px; color: #0d6efd; background: #e7f1ff; font-size: 14px; cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: center; }
+.rename-details summary::-webkit-details-marker { display: none; }
+.rename-details summary:hover { background: #0d6efd; color: white; transition-duration: 0.3s; }
+.rename-form { position: absolute; top: 45px; left: 0; display: flex; gap: 5px; background: white; padding: 8px; border: 1px solid #ddd; border-radius: 5px; z-index: 10; }
+.rename-form input { width: 140px; height: 32px; box-sizing: border-box; padding: 5px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+.rename-form button { height: 32px; padding: 5px 10px; border: 1px solid #ddd; border-radius: 4px; background: white; color: #0066ff; margin-left: 7px; cursor: pointer; }
+.delete-btn { box-sizing: border-box; margin-left: 8px; width: 100px; height: 38px; padding: 7px 10px; color: red; border: 1px solid #e20808; border-radius: 5px; background: rgb(252,221,221); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.delete-btn:hover { background: #e20808; color: white; }
+
+/* =========================================================
+   OPERATIONS FEED (notepad)
+   ========================================================= */
+.operations-notepad { position: fixed; right: 20px; bottom: 90px; width: 300px; max-height: 340px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.12); display: flex; flex-direction: column; z-index: 900; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow: hidden; }
+.notepad-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #111827; color: #f9fafb; }
+.notepad-title { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+.notepad-clear { background: transparent; border: 1px solid #374151; color: #e5e7eb; font-size: 11px; padding: 3px 10px; border-radius: 5px; cursor: pointer; transition: background 0.15s; }
+.notepad-clear:hover { background: #1f2937; }
+.notepad-body { padding: 10px 14px; overflow-y: auto; flex: 1; min-height: 100px; font-size: 12.5px; line-height: 1.5; background: #fafafa; }
+.notepad-entry { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f3f4f6; }
+.notepad-entry:last-child { border-bottom: none; }
+.notepad-time { color: #9ca3af; font-variant-numeric: tabular-nums; flex-shrink: 0; font-size: 11.5px; }
+.notepad-text { color: #1f2937; word-break: break-word; }
+.notepad-empty { color: #9ca3af; font-style: italic; font-size: 12.5px; text-align: center; padding: 12px 0; }

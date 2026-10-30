@@ -1,0 +1,4 @@
+<select name="right_col" class="form-input">
+    <option value="">— select —</option>
+    {% for col in columns %}<option value="{{ col }}">{{ col }}</option>{% endfor %}
+</select>

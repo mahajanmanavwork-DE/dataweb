@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login — Data Weaber</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #f3f4f6;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .login-card {
+            background: #ffffff;
+            padding: 32px 36px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            width: 360px;
+        }
+        .login-card h1 {
+            margin: 0 0 8px 0;
+            font-size: 22px;
+            color: #111827;
+        }
+        .login-card p.subtitle {
+            margin: 0 0 24px 0;
+            color: #6b7280;
+            font-size: 13.5px;
+        }
+        .login-card label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4b5563;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+        .login-card input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 11px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .login-btn:hover { background: #1d4ed8; }
+        .login-error {
+            color: #b91c1c;
+            font-size: 13px;
+            margin-bottom: 12px;
+            padding: 8px 10px;
+            background: #fef2f2;
+            border-left: 3px solid #dc2626;
+            border-radius: 4px;
+        }
+        .login-hint {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h1>Data Weaber</h1>
+        <p class="subtitle">Sign in to continue</p>
+
+        {% if error %}
+            <div class="login-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/login">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required autofocus>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+
+            <button class="login-btn" type="submit">Sign in</button>
+        </form>
+
+        <div class="login-hint">Default: admin / admin</div>
+    </div>
+
+</body>
+</html>

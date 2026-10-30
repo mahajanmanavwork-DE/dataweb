@@ -1,0 +1,49 @@
+<form onsubmit="return false;">
+    <div class="operation-form">
+        <div class="operation-form-title">Filter</div>
+
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="col_name">Column</label>
+                <select name="col_name" id="col_name" class="form-input">
+                    {% for value in columns %}
+                    <option value="{{ value }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="operator">Operator</label>
+                <select name="operator" id="operator" class="form-input">
+                    {% for operator in operations %}
+                    <option value="{{ operator }}">{{ operator }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field form-field-wide">
+                <label for="filter-value">Value</label>
+                <input type="text" name="filter_value" id="filter-value"
+                       class="form-input" placeholder="Enter value" required>
+            </div>
+        </div>
+
+        <label class="case-toggle">
+            <input type="checkbox" name="case_sensitive" value="true">
+            <span>Match case</span>
+        </label>
+
+        <div class="form-actions">
+            <button class="btn-apply" type="button"
+                    hx-post="/filter-operation"
+                    hx-include="closest form"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Apply</button>
+
+            <button class="btn-cancel" type="button"
+                    hx-get="/close-slot"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Cancel</button>
+        </div>
+    </div>
+</form>

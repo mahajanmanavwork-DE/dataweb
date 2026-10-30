@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataweb"
+version = "0.1.0"
+dependencies = ["fastapi", "uvicorn[standard]", "jinja2", "python-multipart", "itsdangerous", "python-dotenv", "pandas", "pyarrow", "openpyxl", "numpy"]
+
+[project.scripts]
+dataweb = "dataweb_cli:main"

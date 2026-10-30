@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Data Weaber</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/info_style.css">
+    <link rel="stylesheet" href="/static/operations.css">
+    <link rel="stylesheet" href="/static/columns.css">
+    <link rel="stylesheet" href="/static/modes.css">
+</head>
+
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+<body>
+
+    <!-- Navigation bar -->
+    <nav class="navbar">
+
+        <!-- Left Navigation bar -->
+        <div class="nav-left">
+            <h1>Visual File Data Preprocessing Tool</h1>
+            <p>SQL-style transformations over files — every step runs on the server.</p>
+        </div>
+
+        <!-- Right Navigation bar -->
+        <div class="nav-right">
+            <a href="/home?source=home" class="nav-link">Home</a>
+            <a href="/info" class="nav-link">Spark</a>
+            <a href="/info" class="nav-link">Info</a>
+            <a href="/home?source=reset" class="nav-link">Reset</a>
+            <a href="/logout" class="nav-link">Logout</a>
+        </div>
+    </nav>
+
+    {% block content %}
+    {% block filepreview %}
+    <div class="top-panel">
+        <div class="left-panel">
+                <form action="/scan" method="get">
+                    <button type="submit" class="scan-btn">Scan</button>
+                </form>
+        </div>
+
+        <div class="right-panel">
+            {% block files %}
+            {% endblock files %}
+        </div>
+    </div>
+
+    {% endblock filepreview %}
+    {% endblock content %}
+
+
+    <footer class="site-footer" id="site-footer">
+        <div class="footer-handle" id="footer-handle">
+            <span class="footer-label">Operations Panel</span>
+            <button class="footer-toggle" type="button"
+                    onclick="document.getElementById('site-footer').classList.toggle('expanded')">
+                ▲
+            </button>
+        </div>
+
+        <div class="footer-content">
+        <div id="footer-slot"></div>
+    </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<form method="post" action="/write-operation"
+      hx-post="/write-operation"
+      hx-target="#footer-slot"
+      hx-swap="innerHTML">
+    <div class="operation-form">
+        <div class="operation-form-title">Write</div>
+
+        <div class="window-section">
+            <div class="window-section-title">Select columns to write</div>
+            <div class="window-grid-2" style="flex-wrap: wrap; gap: 8px;">
+                {% for col in columns %}
+                <label class="window-check" style="display: inline-block; vertical-align: middle; border: 1px solid #ddd; padding: 6px 12px; border-radius: 6px; background: #fff; color: #111827; white-space: nowrap;">
+                    <input type="checkbox" name="selected_cols" value="{{ col }}" checked style="width: 16px; height: 16px;">
+                    <span style="font-size: 14px; color: #111827; margin-left: 8px;">{{ col }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="file-name">File name</label>
+                <input type="text" name="file_name" id="file-name" class="form-input"
+                       value="{{ default_name }}" placeholder="output_file" required>
+            </div>
+
+            <div class="form-field">
+                <label for="file-format">Format</label>
+                <select name="file_format" id="file-format" class="form-input">
+                    <option value="csv">CSV</option>
+                    <option value="parquet">Parquet</option>
+                    <option value="json">JSON</option>
+                    <option value="xlsx">Excel</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="write-folder-note">
+            Saved to: <code>{{ output_folder }}</code>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-apply" type="button"
+                    hx-post="/write-operation"
+                    hx-include="closest form"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Save</button>
+
+            <button class="btn-cancel" type="button"
+                    hx-get="/close-slot"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Cancel</button>
+        </div>
+    </div>
+</form>

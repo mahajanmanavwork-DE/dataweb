@@ -1,0 +1,80 @@
+<div class="columns-container" id="columns-container">
+    <div class="columns-head">Columns</div>
+    {% for column in column_names %}
+    <div class="column-box" draggable="true" id="column-{{ loop.index }}" data-column="{{ column }}"
+        data-dtype="{{ column_dtypes[loop.index0] }}">
+        <div class="column-header">
+            <span class="column-name" onclick="this.querySelector('input').focus();" style="cursor:text; padding:2px 6px; border-radius:4px;">
+                <form hx-post="/rename/{{ filename }}" hx-target="#opened_files" hx-swap="innerHTML" style="display:inline; margin:0; padding:0;">
+                    <input type="hidden" name="old_name" value="{{ column }}">
+                    <input type="text" name="new_name" value="{{ column }}" required
+                        style="font:inherit; padding:2px 6px; border:none; border-radius:4px; background:transparent; color:#1f2937; width:auto; min-width:60px;"
+
+                        onclick="event.stopPropagation(); event.preventDefault();">
+                </form>
+            </span>
+            <span class="column-dtype">{{ column_dtypes[loop.index0] }}</span>
+        </div>
+        <div class="column-actions">
+            <form hx-post="/delete/{{ filename }}" hx-target="#opened_files" hx-swap="innerHTML">
+                <input type="hidden" name="column" value="{{ column }}">
+                <button type="submit" class="delete-btn">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+
+    <br>
+<div class="file-operation-div">
+    <p class="file-operations">File Operations</p>
+    <button hx-get="/filter" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Filter</button>
+    <button hx-get="/groupby" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Group By</button>
+    <button hx-get="/orderby" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Order By</button>
+    <button hx-get="/distinct" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Distinct</button>
+    <button hx-get="/join" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Join</button>
+    <button hx-get="/window" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Window</button>
+    <button hx-get="/offset" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Offset</button>
+    <button hx-get="/limit" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Limit</button>
+    <button hx-get="/write" hx-target="#footer-slot" hx-swap="innerHTML" class="operations-buttons">Write</button>
+</div>
+    <div id="footer-slot"></div>
+
+</div>
+
+
+    <br>
+{% include "operations/notepad.html" %}
+
+<div hx-get="/notepad" hx-trigger="every 2s" hx-target="#operations-notepad" hx-swap="outerHTML" style="display:none"></div>
+
+<script>
+var container = document.getElementById("columns-container");
+var draggedCard = null;
+container.addEventListener("dragstart", function(e){
+    var card = e.target.closest(".column-box");
+    if(!card){e.preventDefault();return;}
+    draggedCard = card; draggedCard.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", card.id);
+});
+container.addEventListener("dragend", function(e){
+    if(draggedCard){draggedCard.classList.remove("dragging");}
+    draggedCard = null; saveOrder();
+});
+container.addEventListener("dragover", function(e){
+    if(!draggedCard) return; e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    var target = e.target.closest(".column-box");
+    if(!target || target === draggedCard) return;
+    var box = target.getBoundingClientRect();
+    var mid = box.width/2;
+    if(e.clientX - box.left < mid) container.insertBefore(draggedCard, target);
+    else container.insertBefore(draggedCard, target.nextSibling);
+});
+function saveOrder(){
+    var cards = container.querySelectorAll(".column-box");
+    var order = [];
+    cards.forEach(function(c){order.push({column:c.dataset.column, dtype:c.dataset.dtype});});
+    fetch("/reorder/{{ filename }}", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(order)});
+}
+</script>

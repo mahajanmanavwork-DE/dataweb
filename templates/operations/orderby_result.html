@@ -1,0 +1,46 @@
+<form onsubmit="return false;">
+    <div class="operation-form">
+        <div class="operation-form-title">Order By</div>
+
+        <div class="form-grid">
+            <div class="form-field">
+                <label for="order-col">Column</label>
+                <select name="column" id="order-col" class="form-input">
+                    {% for col in columns %}
+                    <option value="{{ col }}">{{ col }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-field">
+                <label for="order-dir">Direction</label>
+                <select name="direction" id="order-dir" class="form-input">
+                    <option value="asc">Ascending (A → Z, 0 → 9)</option>
+                    <option value="desc">Descending (Z → A, 9 → 0)</option>
+                </select>
+            </div>
+        </div>
+
+        {% if error %}
+            <div class="orderby-error">{{ error }}</div>
+        {% else %}
+            <div class="result-banner">
+                <span class="result-after">{{ row_count }} rows sorted</span>
+                <span class="result-diff">{{ column }} · {{ direction }}</span>
+            </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button class="btn-apply" type="button"
+                    hx-post="/orderby-operation"
+                    hx-include="closest form"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Apply</button>
+
+            <button class="btn-cancel" type="button"
+                    hx-get="/close-slot"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Cancel</button>
+        </div>
+    </div>
+</form>

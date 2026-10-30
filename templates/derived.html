@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Derived Column — College Prac 2</title>
+<style>
+:root{--bg:#0b0c15;--card:#16182a;--accent:#7ee787;--text:#e8e8f0;--sub:#9ca3af;--border:#272b45;--radius:14px;--font:sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);padding:40px 20px;min-height:100vh}
+.container{max-width:560px;margin:0 auto;background:var(--card);padding:32px;border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+h1{font-size:22px;margin-bottom:6px}
+.subtitle{color:var(--sub);font-size:14px;margin-bottom:24px}
+form{display:flex;flex-direction:column;gap:16px}
+label{font-size:12px;color:var(--sub);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;font-weight:600}
+select,input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:#0f1220;color:var(--text);font-size:15px;outline:none;transition:border-color .2s}
+select:focus,input:focus{border-color:var(--accent)}
+.row{display:flex;gap:12px}
+.row > div{flex:1}
+button{margin-top:8px;padding:14px;border:none;border-radius:10px;background:var(--accent);color:#0b0c15;font-weight:700;font-size:16px;cursor:pointer;transition:opacity .2s}
+button:hover{opacity:.9}
+.result{margin-top:20px;padding:14px;border-radius:10px;background:#0f1220;border:1px solid var(--border);font-size:13px;color:var(--sub);word-break:break-word}
+.result b{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Derived Column</h1>
+<p class="subtitle">Select old column (optional), define new column name, choose modifier.</p>
+<form method="POST" action="/derive_column">
+  <div>
+    <label for="old_col">Old column (optional — leave empty for blank)</label>
+    <select id="old_col" name="old_col">
+      <option value="">— empty / blank —</option>
+      <option value="id">id</option>
+      <option value="price">price</option>
+      <option value="name">name</option>
+      <option value="value">value</option>
+    </select>
+  </div>
+  <div>
+    <label for="new_col">New column name</label>
+    <input id="new_col" name="new_col" placeholder="e.g. price_plus_10pct" required />
+  </div>
+  <div class="row">
+    <div>
+      <label for="op">Operation</label>
+      <select id="op" name="op">
+        <option value="pct_up">+10%</option>
+        <option value="pct_down">-10%</option>
+        <option value="add_50">+50 points</option>
+        <option value="sub_50">-50 points</option>
+        <option value="prefix_E">Prefix "E"</option>
+      </select>
+    </div>
+    <div>
+      <label for="val">Modifier value (optional number/string)</label>
+      <input id="val" name="val" placeholder="e.g. 50 or E" />
+    </div>
+  </div>
+  <button type="submit">Create Derived Column</button>
+</form>
+{% if result %}
+<div class="result">Created: <b>{{ result }}</b></div>
+{% endif %}
+</div>
+</body>
+</html>

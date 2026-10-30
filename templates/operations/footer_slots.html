@@ -1,0 +1,69 @@
+<div id="filter-operations" class="filter_operations">
+    {% if active == "filter" %}
+        {% if rows_before is defined %}{% include "operations/filter_result.html" %}
+        {% else %}{% include "operations/filter.html" %}{% endif %}
+    {% endif %}
+</div>
+
+<div id="limit-operations">
+    {% if active == "limit" %}
+        {% if rows_before is defined or error is defined %}{% include "operations/limit_result.html" %}
+        {% else %}{% include "operations/limit.html" %}{% endif %}
+    {% endif %}
+</div>
+
+<div id="offset-operations">
+    {% if active == "offset" %}
+        {% if rows_before is defined or error is defined %}{% include "operations/offset_result.html" %}
+        {% else %}{% include "operations/offset.html" %}{% endif %}
+    {% endif %}
+</div>
+
+<div id="orderby-operations">
+    {% if active == "orderby" %}
+        {% if row_count is defined or error is defined %}{% include "operations/orderby_result.html" %}
+        {% else %}{% include "operations/orderby.html" %}{% endif %}
+    {% endif %}
+</div>
+
+<div id="distinct-operations">
+    {% if active == "distinct" %}
+        {% if rows_before is defined or error is defined %}{% include "operations/distinct_result.html" %}
+        {% else %}{% include "operations/distinct.html" %}{% endif %}
+    {% endif %}
+</div>
+
+<div id="groupby-operations">
+    {% if active == "groupby" %}
+        {% if rows_before is defined %}
+            {% include "operations/groupby_result.html" %}
+        {% else %}
+            {% include "operations/groupby.html" %}
+        {% endif %}
+    {% endif %}
+</div>
+
+<div id="window-operations">
+    {% if active == "window" %}
+        {% if summary is defined %}
+            {% include "operations/window_result.html" %}
+        {% else %}
+            {% include "operations/window.html" %}
+        {% endif %}
+    {% endif %}
+</div>
+
+<div id="join-operations">
+    {% if active == "join" %}
+        {% if rows_after is defined or error is defined %}{% include "operations/join_result.html" %}
+        {% else %}{% include "operations/join.html" %}{% endif %}
+    {% endif %}
+</div>
+
+<div id="derive-operations">
+    {% if active == "derive" %}{% include "operations/derive.html" %}{% endif %}
+</div>
+
+<div id="write-operations">
+    {% if active == "write" %}{% include "operations/write.html" %}{% endif %}
+</div>

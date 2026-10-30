@@ -1,0 +1,172 @@
+{% set selected_partition_cols = partition_cols | select("ne", "") | list %}
+
+{# ---------- New column + Function ---------- #}
+<div class="window-section">
+    <div class="window-section-title">New column</div>
+
+    <div class="window-grid-2">
+        <div class="window-field">
+            <label for="win_name">Column name</label>
+            <input type="text" name="new_col_name" id="win_name"
+                   class="form-input" value="{{ new_col_name or '' }}"
+                   placeholder="e.g. salary_rank" required>
+        </div>
+
+        <div class="window-field">
+            <label for="win_func">Function</label>
+            <div class="func-refresh-row">
+                <select name="func" id="win_func" class="form-input">
+                    {% for f in funcs %}
+                    <option value="{{ f }}" {% if func == f %}selected{% endif %}>{{ f }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" name="action" value="refresh"
+                        class="btn-refresh">Update fields</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ---------- Function-specific arguments ---------- #}
+{% if func in ("lag", "lead") %}
+<div class="window-section">
+    <div class="window-section-title">Arguments for {{ func }}</div>
+
+    <div class="window-grid-2">
+        <div class="window-field">
+            <label for="win_col">Column</label>
+            <select name="func_col" id="win_col" class="form-input">
+                <option value="">— select column —</option>
+                {% for col in columns %}
+                <option value="{{ col }}" {% if func_col == col %}selected{% endif %}>{{ col }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="window-field">
+            <label for="win_offset">Offset</label>
+            <input type="number" name="offset" id="win_offset"
+                   class="form-input" min="1" value="{{ offset or 1 }}">
+        </div>
+    </div>
+</div>
+{% elif func in ("sum", "count", "min", "max") %}
+<div class="window-section">
+    <div class="window-section-title">Arguments for {{ func }}</div>
+
+    <div class="window-grid-1">
+        <div class="window-field">
+            <label for="win_col">Column</label>
+            <select name="func_col" id="win_col" class="form-input">
+                <option value="">— select column —</option>
+                {% for col in columns %}
+                <option value="{{ col }}" {% if func_col == col %}selected{% endif %}>{{ col }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+{% elif func == "ntile" %}
+<div class="window-section">
+    <div class="window-section-title">Arguments for ntile</div>
+
+    <div class="window-grid-1">
+        <div class="window-field">
+            <label for="win_ntile">N tiles</label>
+            <input type="number" name="n_tiles" id="win_ntile"
+                   class="form-input" min="1" value="{{ n_tiles or 2 }}">
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# ---------- PARTITION BY ---------- #}
+<div class="window-section">
+    <div class="window-section-title">Partition by</div>
+
+    {% for i in range(partition_cols | length) %}
+    <div class="window-partition-row">
+        <select name="partition_col" class="form-input">
+            <option value="">— select column —</option>
+            {% for col in columns %}
+            <option value="{{ col }}"
+                {% if partition_cols[i] == col %}selected{% endif %}
+                {% if col in selected_partition_cols and partition_cols[i] != col %}disabled{% endif %}>
+                {{ col }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="action" value="remove_partition:{{ i }}" class="row-remove">✕</button>
+    </div>
+    {% endfor %}
+
+    <button type="submit" name="action" value="add_partition" class="add-row-btn">
+        + Add partition column
+    </button>
+</div>
+
+{# ---------- ORDER BY ---------- #}
+<div class="window-section">
+    <div class="window-section-title">Order by</div>
+
+    <div class="window-grid-2">
+        <div class="window-field">
+            <label for="win_order">Column</label>
+            <select name="order_col" id="win_order" class="form-input">
+                <option value="">— none —</option>
+                {% for col in columns %}
+                <option value="{{ col }}" {% if order_col == col %}selected{% endif %}>{{ col }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="window-field">
+            <label for="win_dir">Direction</label>
+            <select name="order_dir" id="win_dir" class="form-input">
+                <option value="asc"  {% if order_dir == 'asc'  %}selected{% endif %}>Ascending</option>
+                <option value="desc" {% if order_dir == 'desc' %}selected{% endif %}>Descending</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+{# ---------- ROWS BETWEEN ---------- #}
+<div class="window-section">
+    <div class="window-section-title">Rows between</div>
+
+    <div class="window-grid-2">
+        <div class="window-field">
+            <label for="frame_start">Start</label>
+            <select name="frame_start" id="frame_start" class="form-input">
+                <option value="unbounded_preceding" {% if frame_start == 'unbounded_preceding' %}selected{% endif %}>Unbounded preceding</option>
+                <option value="N_preceding"           {% if frame_start == 'N_preceding'           %}selected{% endif %}>N preceding</option>
+                <option value="current_row"           {% if frame_start == 'current_row'           %}selected{% endif %}>Current row</option>
+            </select>
+        </div>
+
+        <div class="window-field">
+            <label for="frame_end">End</label>
+            <select name="frame_end" id="frame_end" class="form-input">
+                <option value="current_row"         {% if frame_end == 'current_row'         %}selected{% endif %}>Current row</option>
+                <option value="N_following"         {% if frame_end == 'N_following'         %}selected{% endif %}>N following</option>
+                <option value="unbounded_following" {% if frame_end == 'unbounded_following' %}selected{% endif %}>Unbounded following</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="window-grid-2" style="margin-top: 14px;">
+        <div class="window-field">
+            <label for="frame_start_n">N (start)</label>
+            <input type="number" name="frame_start_n" id="frame_start_n" class="form-input"
+                   min="1" value="{{ frame_start_n or 1 }}">
+        </div>
+
+        <div class="window-field">
+            <label for="frame_end_n">N (end)</label>
+            <input type="number" name="frame_end_n" id="frame_end_n" class="form-input"
+                   min="1" value="{{ frame_end_n or 1 }}">
+        </div>
+    </div>
+
+    <span class="window-hint">Only used when Order by has a column selected.</span>
+</div>

@@ -1,0 +1,7 @@
+{% if error %}
+<div class="limit-error">{{ error }}</div>
+{% else %}
+<div class="limit-result">
+    <p>Join applied: <strong>{{ left_file }}</strong> ({{ left_col }}) + <strong>{{ right_file }}</strong> ({{ right_col }}) = <strong>{{ rows_after }}</strong> rows</p>
+</div>
+{% endif %}

@@ -1,0 +1,56 @@
+{% set selected_group_cols = group_cols | select("ne", "") | list %}
+
+<div class="groupby-section">
+    <div class="groupby-section-title">Group by columns</div>
+
+    {% for i in range(group_cols | length) %}
+    <div class="groupby-row">
+        <select name="group_col" class="form-input">
+            <option value="">— select column —</option>
+            {% for col in columns %}
+            <option value="{{ col }}"
+                {% if group_cols[i] == col %}selected{% endif %}
+                {% if col in selected_group_cols and group_cols[i] != col %}disabled{% endif %}>
+                {{ col }}
+            </option>
+            {% endfor %}
+        </select>
+        <button type="submit" name="action" value="remove_group:{{ i }}" class="row-remove">✕</button>
+    </div>
+    {% endfor %}
+
+    <button type="submit" name="action" value="add_group" class="add-row-btn">
+        + Add group column
+    </button>
+</div>
+
+<div class="groupby-section">
+    <div class="groupby-section-title">Aggregations</div>
+
+    {% for i in range(agg_rows | length) %}
+    {% set row = agg_rows[i] %}
+    <div class="groupby-row agg-row">
+        <select name="agg_col" class="form-input">
+            <option value="">— column —</option>
+            {% for col in columns %}
+            <option value="{{ col }}" {% if row.col == col %}selected{% endif %}>{{ col }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="agg_func" class="form-input">
+            {% for f in agg_functions %}
+            <option value="{{ f }}" {% if row.func == f %}selected{% endif %}>{{ f }}</option>
+            {% endfor %}
+        </select>
+
+        <input type="text" name="agg_alias" class="form-input"
+               placeholder="alias (optional)" value="{{ row.alias }}">
+
+        <button type="submit" name="action" value="remove_agg:{{ i }}" class="row-remove">✕</button>
+    </div>
+    {% endfor %}
+
+    <button type="submit" name="action" value="add_agg" class="add-row-btn">
+        + Add aggregation
+    </button>
+</div>

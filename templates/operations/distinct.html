@@ -1,0 +1,32 @@
+<form onsubmit="return false;">
+    <div class="operation-form">
+        <div class="operation-form-title">Distinct</div>
+
+        <div class="form-grid">
+            <div class="form-field form-field-wide">
+                <label for="distinct-keep">When duplicates found</label>
+                <select name="keep" id="distinct-keep" class="form-input">
+                    <option value="first">Keep first occurrence</option>
+                    <option value="last">Keep last occurrence</option>
+                </select>
+                <span class="form-hint">
+                    Distinct is computed across all visible columns.
+                    Hidden or deleted columns are not considered.
+                </span>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn-apply" type="button"
+                    hx-post="/distinct-operation"
+                    hx-include="closest form"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Apply</button>
+
+            <button class="btn-cancel" type="button"
+                    hx-get="/close-slot"
+                    hx-target="#footer-slot"
+                    hx-swap="innerHTML">Cancel</button>
+        </div>
+    </div>
+</form>

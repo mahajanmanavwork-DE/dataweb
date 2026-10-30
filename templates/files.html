@@ -1,0 +1,44 @@
+{% extends "index.html"%}
+
+{% block files %}
+{% if files_content != {} %}
+<div class="files-section">
+    <div class="files-header">
+        <span class="files-label">FILES</span>
+    </div>
+    <div class="files-grid">
+        {% for key, file in files_content.items() %}
+        <div class="file-card">
+            {% set extension = key.split('.')[-1].upper() %}
+            <span class="file-format-badge file-{{ extension.lower() }}">
+                {{ extension }}
+            </span>
+            <div class="file-name-wrapper">
+                <span class="file-name" title="{{ key }}">
+                    {{ key.split('/')[-1].rsplit('.', 1)[0] | truncate(22, True, '...') }}
+                </span>
+            </div>
+            <div class="file-actions">
+                <button class="btn btn-open" hx-get="/open/{{ key }}" hx-target="#opened_files" hx-swap="innerHTML">
+                    Open
+                </button>
+                <a href="/preview/{{ key }}" class="btn btn-preview" target="_blank">Preview</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="no-files">No files available</div>
+{% endif %}
+
+<div id="opened_files"></div>
+</div>
+
+
+
+
+
+
+
+{% endblock files %}

@@ -1,0 +1,46 @@
+{
+    "admin": {
+        "password": "admin",
+        "current_key": "aa541e5cc46e",
+        "selected_file": "history.json",
+        "operations": {},
+        "prev_key": "48cba61b6261",
+        "undo_stack": [
+            [
+                null,
+                {}
+            ],
+            [
+                "d9b2c0d1986d",
+                {}
+            ],
+            [
+                "d9b2c0d1986d",
+                {
+                    "part-00000-c12 copy.csv": {
+                        "delete": [
+                            "person_id"
+                        ]
+                    }
+                }
+            ],
+            [
+                "d9b2c0d1986d",
+                {
+                    "part-00000-c12 copy.csv": {
+                        "delete": [
+                            "person_id",
+                            "payment_amount"
+                        ]
+                    }
+                }
+            ]
+        ]
+    },
+    "manav": {
+        "password": "manav",
+        "current_key": null,
+        "selected_file": null,
+        "operations": {}
+    }
+}

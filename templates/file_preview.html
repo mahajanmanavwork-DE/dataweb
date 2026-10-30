@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block filepreview %}
+    <div class="table-heading">
+        <h1>Previewing File: {{ filename }}</h1>
+    </div>
+
+    <div class="table-wrapper">
+        <div class="table-container">
+            {{ df | safe }}
+        </div>
+    </div>
+{% endblock filepreview %}

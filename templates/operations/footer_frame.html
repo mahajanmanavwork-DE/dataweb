@@ -1,0 +1,19 @@
+<div id="filter-operations" class="filter_operations">
+    {% if active == "filter" %}{% include "operations/filter.html" %}{% endif %}
+</div>
+
+<div id="limit-operations">
+    {% if active == "limit" %}{% include "operations/limit.html" %}{% endif %}
+</div>
+
+<div id="offset-operations">
+    {% if active == "offset" %}{% include "operations/offset.html" %}{% endif %}
+</div>
+
+<div id="orderby-operations">
+    {% if active == "orderby" %}{% include "operations/orderby.html" %}{% endif %}
+</div>
+
+<div id="write-operations">
+    {% if active == "write" %}{% include "operations/write.html" %}{% endif %}
+</div>

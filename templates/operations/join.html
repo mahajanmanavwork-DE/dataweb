@@ -1,0 +1,77 @@
+<form method="post" action="/join-operation"
+      hx-post="/join-operation"
+      hx-target="#footer-slot"
+      hx-swap="innerHTML">
+    <div class="operation-form">
+        <div class="operation-form-title">Join</div>
+
+        {% if error %}
+        <div class="limit-error">{{ error }}</div>
+        {% endif %}
+
+        <div class="window-section">
+            <div class="window-section-title">Select table to join</div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <select name="join_file" class="form-input" id="join-file-select" style="flex: 1; min-width: 240px;">
+                    <option value="">— select file —</option>
+                    {% for key in files_content.items() %}
+                        {% if key[0] != filename %}
+                        <option value="{{ key[0] }}">{{ key[0] }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <button type="button" class="btn-apply" style="padding: 8px 14px; font-size: 13px; white-space: nowrap; align-self: flex-start;"
+                        hx-get="/join-file-columns" hx-trigger="click" hx-target="#right-col-select"
+                        hx-include="#join-file-select"
+                        hx-vals='js:{"join_file": document.getElementById("join-file-select").value}'>✓</button>
+            </div>
+        </div>
+
+        <div class="window-section">
+            <div class="window-section-title">Join key (single pair)</div>
+            <div class="window-partition-row">
+                <div class="window-grid-2">
+                    <div class="window-field">
+                        <label>Left column</label>
+                        <select name="left_col" class="form-input">
+                            <option value="">— select —</option>
+                            {% for col in columns %}<option value="{{ col }}">{{ col }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="window-field">
+                        <label>Right file column</label>
+                        <div id="right-col-select">
+                        <select name="right_col" class="form-input">
+                            <option value="">— select —</option>
+                            {% for col in right_columns or columns %}<option value="{{ col }}">{{ col }}</option>{% endfor %}
+                        </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="window-section">
+            <div class="window-section-title">Join type</div>
+            <div class="window-grid-1">
+                <div class="window-field">
+                    <label for="join_type">Type</label>
+                    <select name="join_type" id="join_type" class="form-input">
+                        <option value="inner" selected>Inner</option>
+                        <option value="left">Left</option>
+                        <option value="right">Right</option>
+                        <option value="outer">Outer</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="form-actions">
+            <button type="submit" name="action" value="apply" class="btn-apply">Apply</button>
+            <button type="button" class="btn-cancel"
+                    hx-get="/close-slot" hx-target="#footer-slot" hx-swap="innerHTML">Cancel</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,196 @@
+.table-heading {
+    margin: 24px 30px 16px;
+}
+
+.table-heading h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #222;
+}
+
+/* Outer table wrapper */
+.table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    margin: 10px;
+
+    /* Makes horizontal scrolling smooth */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Generated pandas DataFrame table */
+.table-container table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Table header */
+.table-container thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
+    padding: 12px 16px;
+    background: #f5f7fa;
+    color: #333;
+    font-weight: 600;
+    text-align: left;
+
+    border-bottom: 2px solid #ddd;
+    white-space: nowrap;
+}
+
+/* Table cells */
+.table-container tbody td {
+    padding: 10px 16px;
+    color: #444;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+}
+
+/* Alternate rows */
+.table-container tbody tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Hover effect */
+.table-container tbody tr:hover {
+    background-color: #f0f6ff;
+}
+
+/* Remove bottom border from last row */
+.table-container tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Scrollbar */
+.table-wrapper::-webkit-scrollbar {
+    height: 9px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: #bbb;
+    border-radius: 10px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* Firefox scrollbar */
+.table-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #bbb #f1f1f1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .table-heading h1 {
+        font-size: 20px;
+    }
+
+    .table-container table {
+        font-size: 13px;
+    }
+
+    .table-container thead th,
+    .table-container tbody td {
+        padding: 9px 12px;
+    }
+}
+
+/* ===== Sticky Operations Footer ===== */
+.site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1f2937;
+    color: #f9fafb;
+    border-top: 1px solid #374151;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    transition: max-height 0.25s ease;
+    max-height: 44px;      /* collapsed: just the handle bar */
+    overflow: hidden;
+}
+
+.site-footer.expanded {
+    max-height: 60vh;      /* expanded: enough for the dialog */
+    overflow-y: auto;
+}
+
+.footer-handle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.footer-label {
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.footer-toggle {
+    background: transparent;
+    border: 1px solid #9ca3af;
+    color: #f9fafb;
+    border-radius: 4px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.footer-toggle:hover {
+    background: #374151;
+}
+
+.footer-content {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    line-height: 0;
+    font-size: 0;
+    background: #ffffff;
+    color: #111827;
+    max-height: 0;
+    min-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease, padding 0.25s ease;
+}
+
+.site-footer.expanded .footer-content {
+    padding: 18px 20px 22px 20px;
+    max-height: calc(70vh - 44px);
+    overflow: visible;
+}
+
+/* Give the page bottom padding so content isn't hidden behind the footer */
+body {
+    padding-bottom: 340px;
+}
+
+/* Hide the footer content area when there's nothing in it */
+.filter_operations:empty,
+#write-operations:empty {
+    display: none;
+}

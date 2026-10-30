@@ -1,0 +1,25 @@
+<form method="post" action="/window-edit"
+      hx-post="/window-edit"
+      hx-target="#footer-slot"
+      hx-swap="innerHTML">
+    <div class="operation-form">
+        <div class="operation-form-title">Window Function</div>
+
+        {% if error %}
+        <div class="limit-error">{{ error }}</div>
+        {% else %}
+        <div class="result-banner">
+            <span class="result-after">{{ new_col_name }}</span>
+            <span class="result-diff">{{ summary }}</span>
+        </div>
+        {% endif %}
+
+        {% include "operations/window_rows.html" %}
+
+        <div class="form-actions">
+            <button type="submit" name="action" value="apply" class="btn-apply">Apply</button>
+            <button type="button" class="btn-cancel"
+                    hx-get="/close-slot" hx-target="#footer-slot" hx-swap="innerHTML">Cancel</button>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,26 @@
+<div id="operations-notepad" class="operations-notepad">
+    <div class="notepad-header">
+        <span class="notepad-title">Operations Feed</span>
+        <button class="notepad-clear"
+                type="button"
+                hx-post="/clear-log/{{ filename }}"
+                hx-target="#operations-notepad"
+                hx-swap="outerHTML">Clear</button>
+    </div>
+    <div class="notepad-body">
+        {% if operations_log %}
+            {% for entry in operations_log|reverse %}
+                <div class="notepad-entry">
+                    <div class="notepad-meta">
+                        <span class="notepad-time">{{ entry.time }}</span>
+                        <span class="notepad-user">{{ entry.user }}</span>
+                        <span class="notepad-file">{{ entry.file }}</span>
+                    </div>
+                    <div class="notepad-text">{{ entry.op }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="notepad-empty">No operations yet.</div>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,232 @@
+<div class="columns-head">
+    Columns
+</div>
+    {% for column in column_names %}
+
+        <div class="column-box"
+             draggable="true"
+             id="column-{{ loop.index }}"
+             data-column="{{ column }}"
+             data-dtype="{{ column_dtypes[loop.index0] }}">
+
+            <div class="column-header">
+
+                <span class="column-name">
+                    {{ column }}
+                </span>
+
+                <span class="column-dtype">
+                    {{ column_dtypes[loop.index0] }}
+                </span>
+
+            </div>
+
+        <div class="column-actions">
+
+            <details class="rename-details">
+                <summary>Rename</summary>
+
+                <form hx-post="/rename/{{ filename }}" hx-target="#opened_files" hx-swap="innerHTML" class="rename-form">
+
+                    <input type="hidden"
+                        name="old_name"
+                        value="{{ column }}">
+
+                    <input type="text"
+                        name="new_name"
+                        placeholder="New column name"
+                        required>
+
+                    <button type="submit">
+                        Save
+                    </button>
+
+                </form>
+            </details>
+            
+            <form hx-post="/delete/{{ filename }}"
+                    hx-target="#opened_files"
+                    hx-swap="innerHTML">
+
+                <input type="hidden"
+                    name="column"
+                    value="{{ column }}">
+                <button type="submit" class="delete-btn">
+                    Delete
+                </button>
+            </form>
+
+        </div>
+
+        </div>
+
+    {% endfor %}
+    <br>
+    <div class="file-operation-div">
+    <p class="file-operations" > File Operations </p>
+        <button hx-get="/filter" hx-target="#filter-operations" hx-swap="innerHTML" class="operations-buttons">Filter</button>
+        <a href="/operations/groupBy"><button class="operations-buttons">Group By</button></a>
+        <a href="/operations/orderBy"><button class="operations-buttons">Order By</button></a>
+        <a href="/operations/distinct"><button class="operations-buttons">Distinct</button></a>
+        <a href="/operations/join"><button class="operations-buttons">Join</button></a>
+        <a href="/operations/union"><button class="operations-buttons">Union</button></a>
+        <a href="/operations/unionAll"><button class="operations-buttons">Union All</button></a>
+        <a href="/operations/except"><button class="operations-buttons">Except</button></a>
+        <a href="/operations/intersect"><button class="operations-buttons">Intersect</button></a>
+        <a href="/operations/offset"><button class="operations-buttons">Offset</button></a>
+        <a href="/operations/limit"><button class="operations-buttons">Limit</button></a>
+        <button hx-get="/write" hx-target="#write-operations" hx-swap="innerHTML" class="operations-buttons">Write</button>
+    </div id="write-operations">
+
+    <div id="filter-operations" class="filter_operations">
+    </div>
+
+
+
+<!-- <div class="log-box">
+    <pre>{{logs}}</pre> -->
+
+</div>
+
+
+<script>
+
+    var container =
+        document.getElementById("columns-container");
+
+    var draggedCard = null;
+
+
+    /* -----------------------------
+       START DRAG
+    ----------------------------- */
+
+    container.addEventListener("dragstart", function(event) {
+
+        var card = event.target.closest(".column-box");
+
+        if (!card) {
+            event.preventDefault();
+            return;
+        }
+
+        draggedCard = card;
+
+        draggedCard.classList.add("dragging");
+
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", card.id);
+
+    });
+
+
+    /* -----------------------------
+       END DRAG
+    ----------------------------- */
+
+    container.addEventListener("dragend", function(event) {
+
+        if (draggedCard) {
+            draggedCard.classList.remove("dragging");
+        }
+
+        draggedCard = null;
+
+        saveOrder();
+
+    });
+
+
+    /* -----------------------------
+       DRAG OVER
+    ----------------------------- */
+
+    container.addEventListener("dragover", function(event) {
+
+        if (!draggedCard) return;
+
+        event.preventDefault();
+
+        event.dataTransfer.dropEffect = "move";
+
+        const target =
+            event.target.closest(".column-box");
+
+        if (!target || target === draggedCard) {
+            return;
+        }
+
+
+        const box =
+            target.getBoundingClientRect();
+
+        const mousePosition =
+            event.clientX - box.left;
+
+        const middle =
+            box.width / 2;
+
+
+        if (mousePosition < middle) {
+
+            container.insertBefore(
+                draggedCard,
+                target
+            );
+
+        } else {
+
+            container.insertBefore(
+                draggedCard,
+                target.nextSibling
+            );
+
+        }
+
+    });
+
+
+    /* -----------------------------
+       SAVE NEW ORDER
+    ----------------------------- */
+
+    function saveOrder() {
+
+        const cards =
+            container.querySelectorAll(".column-box");
+
+        const newOrder = [];
+
+
+        cards.forEach(function(card) {
+
+            newOrder.push({
+
+                column: card.dataset.column,
+
+                dtype: card.dataset.dtype
+
+            });
+
+        });
+
+
+        console.log("New order:", newOrder);
+
+
+        fetch("/reorder/{{ filename }}", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(newOrder)
+
+        });
+
+    }
+
+</script>
+
