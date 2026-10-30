@@ -18,7 +18,7 @@ def cmd_setup():
     print("dataweb setup complete.")
 
 def cmd_run():
-    import uvicorn; uvicorn.run("main:app", host="0.0.0.0", port=5000)
+    import uvicorn; import sys; sys.path.insert(0, BASE); uvicorn.run("main:app", host="0.0.0.0", port=5000)
 
 def main():
     p = argparse.ArgumentParser(prog="dataweb")
