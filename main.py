@@ -15,7 +15,7 @@ from scripts.pandas_operations.metadata_functions import (
 )
 from scripts.models.operations import rem_cols, column_operations, get_open_file_data
 from scripts.models.data_operations import DataOperations
-import init_project; init_project
+# import init_project; init_project
 from scripts import auth
 
 dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "env", ".env"))

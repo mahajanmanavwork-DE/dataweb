@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse, sys, os, json, urllib.request
+import argparse, sys, os, json, urllib.request, subprocess, time
 BASE = os.path.dirname(os.path.abspath(__file__))
 PIDFILE = os.path.join(BASE, "dataweb.pid")
 DOWNLOADS = [("https://example.com/file1.csv","input_files/file1.csv"),("https://example.com/file2.csv","input_files/file2.csv")]
@@ -13,7 +13,7 @@ def cmd_setup():
         open(env_path,"w").write("users_path=storage/users.json\nmetadata_path=metadata/metadata.json\n")
     users_path = os.path.join(BASE,"storage","users.json")
     if not os.path.exists(users_path):
-        open(users_path,"w").write(json.dumps({"admin":{"password":"admin"}}))
+        open(users_path,"w").write(json.dumps({"admin":{"password":"admin","current_key":None,"selected_file":None,"operations":{}}}))
     for url,dest in DOWNLOADS:
         target = os.path.join(BASE,dest)
         os.makedirs(os.path.dirname(target), exist_ok=True)
@@ -22,10 +22,19 @@ def cmd_setup():
     print("dataweb setup complete (no pip here).")
 
 def cmd_run(silent=False):
-    import uvicorn; import sys; sys.path.insert(0, BASE)
-    if silent:
-        import logging; logging.getLogger("uvicorn").setLevel(logging.ERROR)
-    uvicorn.run("main:app", host="0.0.0.0", port=5000, access_log=not silent)
+    import sys as s; s.path.insert(0, BASE)
+    log_level = "warning" if silent else "info"
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000", "--log-level", log_level],
+        stdout=(subprocess.DEVNULL if silent else None),
+        stderr=(subprocess.DEVNULL if silent else None),
+        start_new_session=True,
+        cwd=BASE,
+        env={**os.environ, "PYTHONPATH": BASE + ":" + os.environ.get("PYTHONPATH", "")}
+    )
+    with open(PIDFILE, "w") as f:
+        f.write(str(proc.pid))
+    print("Server started (PID", proc.pid, ")" + (" silent" if silent else ""))
 
 def cmd_stop():
     if not os.path.exists(PIDFILE):
@@ -39,19 +48,27 @@ def cmd_stop():
     except Exception as e:
         print(f"Stop error: {e}")
 
-
-
 def cmd_users():
-    import scripts.auth as auth
-    users = auth._load_users()
+    users_path = os.path.join(BASE, "storage", "users.json")
+    if not os.path.exists(users_path):
+        print("No users file.")
+        return
+    users = json.load(open(users_path))
     print(f"Total users: {len(users)}")
-    for u, info in users.items():
-        print(f" - {u} (password={info.get('password')}, key={info.get('current_key')}, file={info.get('selected_file')}, ops={len(info.get('operations',{}))})")
+    for name in users:
+        print(f" - {name}")
 
 def cmd_user_add(name, pw):
-    import scripts.auth as auth
-    ok = auth.create_user(name, pw)
-    print("User added" if ok else "User exists")
+    users_path = os.path.join(BASE, "storage", "users.json")
+    users = {}
+    if os.path.exists(users_path):
+        users = json.load(open(users_path))
+    if name in users:
+        print("User exists")
+        return
+    users[name] = {"password": pw, "current_key": None, "selected_file": None, "operations": {}}
+    open(users_path, "w").write(json.dumps(users, indent=4))
+    print("User added")
 
 def main():
     p = argparse.ArgumentParser(prog="dataweb")
@@ -69,5 +86,5 @@ def main():
         else:
             print("Usage: dataweb user --name NAME --password PASS")
     elif args.command == "stop": cmd_stop()
-if __name__ == "__main__": main()
-# Note: user commands appended below for CLI
+if __name__ == "__main__":
+    main()
