@@ -28,8 +28,9 @@ def cmd_run(silent=False):
     stderr_dest = subprocess.DEVNULL if silent else None
     proc = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000", "--log-level", log_level],
-        stdout=stdout_dest,
-        stderr=stderr_dest,
+        stdout=open(os.path.join(BASE,"uvicorn_stdout.log"),"w"),
+        stderr=open(os.path.join(BASE,"uvicorn_stdout.log"),"w"),
+        stdin=subprocess.DEVNULL,
         start_new_session=True,
         cwd=BASE,
         env={**os.environ, "PYTHONPATH": BASE + ":" + os.environ.get("PYTHONPATH", "")}
@@ -37,18 +38,106 @@ def cmd_run(silent=False):
     with open(PIDFILE, "w") as f:
         f.write(str(proc.pid))
     print("Server started (PID", proc.pid, ")" + (" silent" if silent else ""))
+    try:
+        tunnel_log = os.path.join(BASE, "tunnel.log")
+        with open(tunnel_log, "w") as logf:
+            tunnel = subprocess.Popen(
+                [os.path.join(BASE, "cloudflared.exe"), "tunnel", "--url", "http://localhost:5000"],
+                stdout=logf, stderr=logf, stdin=subprocess.DEVNULL,
+                start_new_session=True, cwd=BASE
+            )
+        import time
+        for _ in range(20):
+            time.sleep(0.3)
+            if not os.path.exists(tunnel_log):
+                continue
+            with open(tunnel_log, "r") as f:
+                content = f.read()
+            for line in content.splitlines():
+                if "trycloudflare.com" in line:
+                    for part in line.split():
+                        if part.startswith("https://") and "trycloudflare.com" in part:
+                            print("Public URL:", part)
+                            return
+        # If not found in loop, show last URL found or nothing
+        with open(tunnel_log, "r") as f:
+            content = f.read()
+        for line in content.splitlines():
+            if "trycloudflare.com" in line:
+                for part in line.split():
+                    if part.startswith("https://") and "trycloudflare.com" in part:
+                        print("Public URL:", part)
+                        url_path = os.path.join(BASE, "tunnel_url.txt")
+                        open(url_path, "w").write(part)
+                        storage_dir = os.path.join(BASE, "storage")
+                        os.makedirs(storage_dir, exist_ok=True)
+                        history_path = os.path.join(storage_dir, "tunnel_history.log")
+                        with open(history_path, "a") as h:
+                            h.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} | {part}\n")
+                        if os.path.exists(tunnel_log):
+                            with open(tunnel_log, "r") as src, open(history_path, "a") as dst:
+                                dst.write(src.read() + "\n---\n")
+                        return
+    except Exception as e:
+        print("Tunnel error (cloudflared):", e)
+
+def _find_pid_on_port(port=5000):
+    if sys.platform == "win32":
+        try:
+            out = subprocess.check_output(["netstat", "-ano"], text=True)
+            for line in out.splitlines():
+                if f":{port}" in line and "LISTENING" in line:
+                    parts = line.split()
+                    return int(parts[-1])
+        except Exception:
+            pass
+    else:
+        try:
+            out = subprocess.check_output(["ss", "-tlnp"], text=True, stderr=subprocess.STDOUT)
+            for line in out.splitlines():
+                if f":{port}" in line:
+                    import re
+                    m = re.search(r"pid=(\d+)", line)
+                    if m:
+                        return int(m.group(1))
+        except Exception:
+            pass
+    return None
 
 def cmd_stop():
-    if not os.path.exists(PIDFILE):
-        print("Server not running (no pidfile).")
-        return
-    try:
-        pid = int(open(PIDFILE).read())
-        os.kill(pid, 9)
-        os.remove(PIDFILE)
-        print("Server stopped.")
-    except Exception as e:
-        print(f"Stop error: {e}")
+    pid = _find_pid_on_port(5000)
+    if pid is None:
+        if os.path.exists(PIDFILE):
+            try:
+                pid = int(open(PIDFILE).read())
+            except Exception:
+                pass
+    if pid:
+        try:
+            if sys.platform == "win32":
+                subprocess.run(["taskkill", "/F", "/PID", str(pid), "/T"], capture_output=True)
+            else:
+                try:
+                    os.kill(pid, 9)
+                except ProcessLookupError:
+                    pass
+            print("Server stopped.")
+        except Exception as e:
+            print(f"Stop error: {e}")
+    else:
+        print("Server not running (port 5000 not found).")
+    if os.path.exists(PIDFILE):
+        try:
+            os.remove(PIDFILE)
+        except Exception:
+            pass
+    url_file = os.path.join(BASE, "tunnel_url.txt")
+    for temp in [url_file, os.path.join(BASE, "tunnel.log"), os.path.join(BASE, "uvicorn_stdout.log")]:
+        if os.path.exists(temp):
+            try:
+                os.remove(temp)
+            except Exception:
+                pass
 
 def cmd_users():
     users_path = os.path.join(BASE, "storage", "users.json")
@@ -73,19 +162,23 @@ def cmd_user_add(name, pw):
     print("User added")
 
 def cmd_start():
-    if os.path.exists(PIDFILE):
-        try:
-            pid = int(open(PIDFILE).read())
-            os.kill(pid, 0)
+    # Check if anything is listening on port 5000 (cross-platform)
+    try:
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        result = s.connect_ex(("127.0.0.1", 5000))
+        s.close()
+        if result == 0:
             print("running")
             return
-        except (OSError, ValueError):
-            pass
+    except Exception:
+        pass
     print("stopped")
 
 def main():
     p = argparse.ArgumentParser(prog="dataweb")
-    p.add_argument("command", choices=["setup","run","stop","users","user","start"])
+    p.add_argument("command", choices=["setup","run","stop","users","user","start","status"])
     p.add_argument("--name", default=None)
     p.add_argument("--password", default=None)
     p.add_argument("--silent", action="store_true")
@@ -98,7 +191,7 @@ def main():
             cmd_user_add(args.name, args.password)
         else:
             print("Usage: dataweb user --name NAME --password PASS")
-    elif args.command == "start": cmd_start()
+    elif args.command == "start" or args.command == "status": cmd_start()
     elif args.command == "stop": cmd_stop()
 if __name__ == "__main__":
     main()

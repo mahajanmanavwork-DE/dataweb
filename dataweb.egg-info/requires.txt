@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
+itsdangerous
+python-dotenv
+pandas
+pyarrow
+openpyxl
+numpy

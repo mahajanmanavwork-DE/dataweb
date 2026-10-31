@@ -1,0 +1,11 @@
+README.md
+dataweb_cli.py
+init_project.py
+main.py
+pyproject.toml
+dataweb.egg-info/PKG-INFO
+dataweb.egg-info/SOURCES.txt
+dataweb.egg-info/dependency_links.txt
+dataweb.egg-info/entry_points.txt
+dataweb.egg-info/requires.txt
+dataweb.egg-info/top_level.txt
