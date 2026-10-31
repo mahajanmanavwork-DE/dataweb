@@ -55,6 +55,16 @@ def cmd_setup():
         try: urllib.request.urlretrieve(url, target)
         except Exception as e: print(f"Download fail: {e}")
     print("dataweb setup complete (venv ready).")
+    binary_name = "cloudflared.exe" if sys.platform == "win32" else "cloudflared"
+    binary_path = os.path.join(BASE, binary_name)
+    if not os.path.exists(binary_path):
+        possible_src = os.path.join(os.path.expanduser("~"), "Desktop", "college-prac-2", binary_name)
+        if os.path.exists(possible_src):
+            import shutil
+            shutil.copy(possible_src, binary_path)
+            print("Copied cloudflared binary from desktop.")
+        else:
+            print("cloudflared binary not found. Download it manually or run from project folder.")
 
 def cmd_run(silent=False):
     import sys as s; s.path.insert(0, BASE)
