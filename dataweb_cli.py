@@ -14,11 +14,7 @@ def cmd_setup():
     users_path = os.path.join(BASE,"storage","users.json")
     if not os.path.exists(users_path):
         open(users_path,"w").write(json.dumps({"admin":{"password":"admin","current_key":None,"selected_file":None,"operations":{}}}))
-    for url,dest in DOWNLOADS:
-        target = os.path.join(BASE,dest)
-        os.makedirs(os.path.dirname(target), exist_ok=True)
-        try: urllib.request.urlretrieve(url, target)
-        except Exception as e: print(f"Download fail: {e}")
+    # Ensure venv and dependencies installed FIRST
     venv_dir = os.path.join(BASE, ".venv")
     if not os.path.exists(venv_dir):
         print("Creating .venv...")
@@ -27,24 +23,37 @@ def cmd_setup():
         venv_python = os.path.join(venv_dir, "Scripts", "python.exe")
     else:
         venv_python = os.path.join(venv_dir, "bin", "python")
+    # Activate venv environment variables
+    if sys.platform == "win32":
+        venv_bin = os.path.join(venv_dir, "Scripts")
+    else:
+        venv_bin = os.path.join(venv_dir, "bin")
+    activated_env = {**os.environ, "VIRTUAL_ENV": venv_dir, "PATH": venv_bin + os.pathsep + os.environ.get("PATH", "")}
     if not os.path.exists(venv_python):
         venv_python = sys.executable
+    print("Activated .venv at:", venv_dir)
     print("Installing dependencies in venv using:", venv_python)
     for cmd_args in [
         [venv_python, "-m", "pip", "install", "--upgrade", "pip"],
         [venv_python, "-m", "pip", "install", "-e", BASE],
     ]:
         try:
-            subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            subprocess.run(cmd_args, env=activated_env, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         except Exception as e:
             print(f"Install step failed: {e}")
     req_path = os.path.join(BASE, "requirements.txt")
     if os.path.exists(req_path):
         try:
-            subprocess.run([venv_python, "-m", "pip", "install", "-r", req_path], check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            subprocess.run([venv_python, "-m", "pip", "install", "-r", req_path], env=activated_env, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             print("Installed requirements.txt in venv.")
         except Exception as e:
             print(f"Requirements install failed: {e}")
+    # Downloads after venv/dependency setup
+    for url,dest in DOWNLOADS:
+        target = os.path.join(BASE,dest)
+        os.makedirs(os.path.dirname(target), exist_ok=True)
+        try: urllib.request.urlretrieve(url, target)
+        except Exception as e: print(f"Download fail: {e}")
     print("dataweb setup complete (venv ready).")
 
 def cmd_run(silent=False):
