@@ -19,7 +19,33 @@ def cmd_setup():
         os.makedirs(os.path.dirname(target), exist_ok=True)
         try: urllib.request.urlretrieve(url, target)
         except Exception as e: print(f"Download fail: {e}")
-    print("dataweb setup complete (no pip here).")
+    venv_dir = os.path.join(BASE, ".venv")
+    if not os.path.exists(venv_dir):
+        print("Creating .venv...")
+        subprocess.run([sys.executable, "-m", "venv", venv_dir], check=False)
+    if sys.platform == "win32":
+        venv_python = os.path.join(venv_dir, "Scripts", "python.exe")
+    else:
+        venv_python = os.path.join(venv_dir, "bin", "python")
+    if not os.path.exists(venv_python):
+        venv_python = sys.executable
+    print("Installing dependencies in venv using:", venv_python)
+    for cmd_args in [
+        [venv_python, "-m", "pip", "install", "--upgrade", "pip"],
+        [venv_python, "-m", "pip", "install", "-e", BASE],
+    ]:
+        try:
+            subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        except Exception as e:
+            print(f"Install step failed: {e}")
+    req_path = os.path.join(BASE, "requirements.txt")
+    if os.path.exists(req_path):
+        try:
+            subprocess.run([venv_python, "-m", "pip", "install", "-r", req_path], check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            print("Installed requirements.txt in venv.")
+        except Exception as e:
+            print(f"Requirements install failed: {e}")
+    print("dataweb setup complete (venv ready).")
 
 def cmd_run(silent=False):
     import sys as s; s.path.insert(0, BASE)
