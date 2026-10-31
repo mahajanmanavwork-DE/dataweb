@@ -24,10 +24,12 @@ def cmd_setup():
 def cmd_run(silent=False):
     import sys as s; s.path.insert(0, BASE)
     log_level = "warning" if silent else "info"
+    stdout_dest = subprocess.DEVNULL if silent else None
+    stderr_dest = subprocess.DEVNULL if silent else None
     proc = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "5000", "--log-level", log_level],
-        stdout=(subprocess.DEVNULL if silent else None),
-        stderr=(subprocess.DEVNULL if silent else None),
+        stdout=stdout_dest,
+        stderr=stderr_dest,
         start_new_session=True,
         cwd=BASE,
         env={**os.environ, "PYTHONPATH": BASE + ":" + os.environ.get("PYTHONPATH", "")}
@@ -70,9 +72,20 @@ def cmd_user_add(name, pw):
     open(users_path, "w").write(json.dumps(users, indent=4))
     print("User added")
 
+def cmd_start():
+    if os.path.exists(PIDFILE):
+        try:
+            pid = int(open(PIDFILE).read())
+            os.kill(pid, 0)
+            print("running")
+            return
+        except (OSError, ValueError):
+            pass
+    print("stopped")
+
 def main():
     p = argparse.ArgumentParser(prog="dataweb")
-    p.add_argument("command", choices=["setup","run","stop","users","user"])
+    p.add_argument("command", choices=["setup","run","stop","users","user","start"])
     p.add_argument("--name", default=None)
     p.add_argument("--password", default=None)
     p.add_argument("--silent", action="store_true")
@@ -85,6 +98,7 @@ def main():
             cmd_user_add(args.name, args.password)
         else:
             print("Usage: dataweb user --name NAME --password PASS")
+    elif args.command == "start": cmd_start()
     elif args.command == "stop": cmd_stop()
 if __name__ == "__main__":
     main()
